@@ -4,6 +4,7 @@
 #include <iostream>
 #include "string"
 #include "vector"
+#include "activity_inc.h"
 
 using namespace std;
 

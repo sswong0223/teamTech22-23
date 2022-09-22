@@ -4,9 +4,20 @@
 
 #include "activity_inc.h"
 
-unsigned int rand_ele_dis();
+#include <iostream>
+#include string
 
-double randTime();
+unsigned int rand_ele_dis(){
+    return rand(200) % -100;
+}
+double randTime(){
+    return rand(200) % -100;
+}
 
+char randDir(){
+    char direction[4] = {"N", "S", "E", "W"};
 
+    return direction[rand() % 5];
+
+}
 
