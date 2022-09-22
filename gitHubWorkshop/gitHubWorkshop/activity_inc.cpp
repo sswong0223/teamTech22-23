@@ -15,7 +15,7 @@ double randTime(){
 }
 
 char randDir(){
-    char direction[4] = {"N", "S", "E", "W"};
+    const char* direction[4] = {"North", "South", "East", "West"};
 
     return direction[rand() % 5];
 
