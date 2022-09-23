@@ -22,23 +22,28 @@ class Satellite{
     string travelDirection;
 
 public:
+    //inital values of Satellites, don't need to change
     Satellite(){
         elevation = 0;
         distanceFromGroundStation = 0;
         timeSinceAccess = 0.00;
         travelDirection = "North";
     }
+    //Contructor with Parameters
     Satellite(unsigned int ele, int dist, double time, string dir){
+        //assign each attribute in private to the variable in in the parameters
         elevation = ele;
         distanceFromGroundStation = dist;
         timeSinceAccess = time;
         travelDirection = dir;
     }
 
+    //function to display satellite attributes
     void print(){
         cout<< elevation << " " << distanceFromGroundStation << " " << timeSinceAccess << " " << travelDirection << endl;
     }
     
+    //returns the distance from ground station of a satellite
     unsigned int getDistance(){
         return distanceFromGroundStation;
     }
@@ -64,23 +69,30 @@ int main(){
         //use getRandom() function to get random attribute vaules
         getRandom(elevation, distanceFromGroundStation, timeSinceAccess, travelDirection);
         
+        //use .push_back() to input each satellite into the schedule vector
+        //use Satellite class constructor to set satellite attributes
         schedule.push_back(Satellite(elevation,distanceFromGroundStation,timeSinceAccess,travelDirection));
     }
 
     // call the print() function in the Satellite class to display the attributes of each satellite
+    // Hint: use for loop to iterate through all index of schedule vector
     for(int i = 0; i<10; i++){
         schedule[i].print();
     }
 
-    // Find the distance 
-    int leastDis = schedule[0].getDistance();
+    int leastDistance = schedule[0].getDistance();
+
+    // Find the distance of the satellite closest to the ground station
+    // Hint: use a for loop to iterate through the vector 
+    //      and an if statement to compare the distance from ground station of each satellite     
     for(int i = 1; i<schedule.size(); i++){
-        if(schedule[i].getDistance() < leastDis){
-            leastDis = schedule[i].getDistance();
+        if(schedule[i].getDistance() < leastDistance){
+            leastDistance = schedule[i].getDistance();
         }
     }
+
     cout<< "Satellite of the least distance is: "<< endl;
-    cout<< leastDis<<endl;
+    cout<< leastDistance<<endl;
 
 }
 
