@@ -13,25 +13,10 @@ using namespace std;
  *
  */
 
-class satellite{
-    //input attributes: elevation, distance traveled from ground station
-    //                  time since access, and travel direction
-    unsigned int elevation;
-    unsigned int distanceFromGroundStation;
-    double timeSinceAccess;
-    string travelDirection
 
-public:
-    Satellite(){
-        elevation = 0;
-
-
-    }
-
-};
 
 int main(){
-
+    satellite satellite;
 
 
 
