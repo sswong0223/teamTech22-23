@@ -57,6 +57,7 @@ int main(){
     Satellite satellite;
     
     // assign variables for each satellite attribute:
+    // * remove this part
     unsigned int elevation;
     unsigned int distanceFromGroundStation;
     double timeSinceAccess;
@@ -65,17 +66,22 @@ int main(){
     // schedule vector to store 10 satellites
     vector<Satellite> schedule;
 
+    // insert 10 satellites into Schedule vector
+    // Hint:-use for loop to iterate through 10 satellite objects
+    //      -use getRandom() function to get random attribute vaules
+    //      -use .push_back() to input each satellite into the schedule vector
+    //          use Satellite class constructor to set satellite attributes
+    
+    // * remove for loop
     for (int i = 0; i<10; i++){
-        //use getRandom() function to get random attribute vaules
         getRandom(elevation, distanceFromGroundStation, timeSinceAccess, travelDirection);
-        
-        //use .push_back() to input each satellite into the schedule vector
-        //use Satellite class constructor to set satellite attributes
         schedule.push_back(Satellite(elevation,distanceFromGroundStation,timeSinceAccess,travelDirection));
     }
 
     // call the print() function in the Satellite class to display the attributes of each satellite
     // Hint: use for loop to iterate through all index of schedule vector
+
+    // *remove for loop
     for(int i = 0; i<10; i++){
         schedule[i].print();
     }
@@ -85,6 +91,8 @@ int main(){
     // Find the distance of the satellite closest to the ground station
     // Hint: use a for loop to iterate through the vector 
     //      and an if statement to compare the distance from ground station of each satellite     
+    
+    // *remove for loop
     for(int i = 1; i<schedule.size(); i++){
         if(schedule[i].getDistance() < leastDistance){
             leastDistance = schedule[i].getDistance();
