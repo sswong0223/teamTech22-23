@@ -1,5 +1,5 @@
 //
-// NAME:
+// NAME:Michelle Lin
 //
 #include <iostream>
 #include <string>
@@ -56,6 +56,7 @@ int main(){
 
     Satellite satellite;
     
+    
     // assign variables for each satellite attribute: 
     //Elevation, Distance From Ground Station, Time since Access, travel Direction                                           
     
@@ -68,11 +69,21 @@ int main(){
     //      -use .push_back() to input each satellite into the schedule vector
     //          use Satellite class constructor to set satellite attributes
     
-    
+    unsigned int elevation;
+    unsigned int distanceFromGroundStation;
+    double timeSinceAccess;
+    string travelDirection;
+    for(int i = 0; i < 10; i++){
+        getRandom(elevation, distanceFromGroundStation,timeSinceAccess, travelDirection);
+        cout << elevation << endl;
+        Satellite satellite(elevation, distanceFromGroundStation, timeSinceAccess, travelDirection);
+        schedule.push_back(satellite);
+    }
 
     // call the print() function in the Satellite class to display the attributes of each satellite
     // Hint: use for loop to iterate through all index of schedule vector
-
+    for(int i = 0; i < 10; i++)
+        schedule[i].print();
     
 
     int leastDistance = schedule[0].getDistance();
@@ -80,11 +91,14 @@ int main(){
     // Find the distance of the satellite closest to the ground station
     // Hint: use a for loop to iterate through the vector 
     //      and an if statement to compare the distance from ground station of each satellite     
-    
+    for(int i = 0; i < 10; i++){
+        if(schedule[i].getDistance() < leastDistance)
+            leastDistance = schedule[i].getDistance();
+    }
     
 
     cout<< "Satellite of the least distance is: "<< endl;
-    // print out found least distance here
+    cout << leastDistance;
 
 }
 
