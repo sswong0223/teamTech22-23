@@ -1,5 +1,5 @@
 //
-// NAME:
+// NAME: Gabrielle Richards
 //
 #include <iostream>
 #include <string>
@@ -57,7 +57,11 @@ int main(){
     Satellite satellite;
     
     // assign variables for each satellite attribute: 
-    //Elevation, Distance From Ground Station, Time since Access, travel Direction                                           
+    //Elevation, Distance From Ground Station, Time since Access, travel Direction  
+    unsigned int e;
+    unsigned int dis;
+    double time;
+    string dir;
     
     // schedule vector to store 10 satellites
     vector<Satellite> schedule;
@@ -67,11 +71,21 @@ int main(){
     //      -use getRandom() function to get random attribute vaules
     //      -use .push_back() to input each satellite into the schedule vector
     //          use Satellite class constructor to set satellite attributes
+    for (int i = 0; i < 10; ++i)
+    {
+        getRandom(e, dis, time, dir);
+        Satellite obj = Satellite(e, dis, time, dir);
+        schedule.push_back(obj);
+    }
     
     
 
     // call the print() function in the Satellite class to display the attributes of each satellite
     // Hint: use for loop to iterate through all index of schedule vector
+    for (int i = 0; i < schedule.size(); ++i)
+    {
+        schedule[i].print();
+    }
 
     
 
@@ -79,11 +93,16 @@ int main(){
 
     // Find the distance of the satellite closest to the ground station
     // Hint: use a for loop to iterate through the vector 
-    //      and an if statement to compare the distance from ground station of each satellite     
+    //      and an if statement to compare the distance from ground station of each satellite
+    for (int i = 1; i < schedule.size(); ++i)
+    {
+        if (schedule[i].getDistance() < leastDistance)
+            leastDistance = schedule[i].getDistance();
+    }    
     
     
 
-    cout<< "Satellite of the least distance is: "<< endl;
+    cout<< "Satellite of the least distance is: "<< leastDistance << endl;
     // print out found least distance here
 
 }
