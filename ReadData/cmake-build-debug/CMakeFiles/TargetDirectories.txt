@@ -1,0 +1,3 @@
+/Users/rebeccadiaz/Desktop/teamTech22-23/backend/src/cmake-build-debug/CMakeFiles/TestSGP4.dir
+/Users/rebeccadiaz/Desktop/teamTech22-23/backend/src/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/rebeccadiaz/Desktop/teamTech22-23/backend/src/cmake-build-debug/CMakeFiles/rebuild_cache.dir
