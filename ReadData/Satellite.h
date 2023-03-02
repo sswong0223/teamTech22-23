@@ -6,56 +6,49 @@
 #define TESTSGP4_SATELLITE_H
 
 #include "libsgp4/Tle.h"
+#include "libsgp4/DateTime.h"
+#include "libsgp4/Eci.h"
+#include "libsgp4/SGP4.h"
+#include "libsgp4/CoordTopocentric.h"
+#include "libsgp4/CoordGeodetic.h"
+#include "libsgp4/Observer.h"
+
+using namespace std;
 
 class Satellite {
     private:
-        TLE tle;
-        //variable to help rank satellites priority
-        int ranking;
-        float durationAccess;
+        libsgp4::Tle tle;
+        //duration that the satellite will communicate with the ground station
+        libsgp4::SGP4 duration;
+        libsgp4::DateTime dt;
+        libsgp4::Eci eci;
+        libsgp4::CoordTopocentric topo;
+        libsgp4::CoordGeodetic geo;
+        libsgp4::Observer obs;
+        libsgp4::SGP4 sgp4;
 
-        //in addition to TLE variables, need variables detailing when and were the antenna should point
+    public:
+        //constructor
+        Satellite(libsgp4::TLE tle){
+            this->tle = tle;
+            sgp4(tle);
+        }
 
         //function to calculate - Where and when the antenna should point over a 7-day period (coordinates,
         // angles as it changes over a 7-day period, take into account velocity of satellite moving)
-        string calculateSat(Satellite sat){
-            /* We are working with LEO satellites...
-             *
-             * important values to consider:
-             * - mean motion
-             * - epoch year and julian day fraction
-             * - eccentricity
-             * - inclination
-             * - right ascension of the ascension mode
-             * - argument of perigee
-             *  -revolution number at epoch and check sum
-             *
-             * Finding Coordinates:
-             * Orbital Formula: r = (h2/μ)/(1 + e cos θ)
-             * TLE converted to code: https://kaitlyn.guru/projects/two-line-elements-tle/
-             *
-             * Duration of Access: minimum (1-20 minutes) 7-15 is probably best
-             * https://www.mathworks.com/help/satcom/ug/satellite-constellation-access-to-groundstation.html
-             *
-             * Aerospace team will determine ground station location, so right now focus on how you will calculate
-             * where and when antenna will point, no need to fully implement and test, just brainstorm how your code
-             * will be
-             *
-             * !!Use SPG4 reference sheet and look through libsgp4 library to find any functions that might help
-             */
-        }
-    public:
-        //constructor
-        Satellite(TLE tle){
-            this->tle = tle;
+        void calculatePos(float timePassed){
+            dt = tle.Epoch().AddMinutes(timePassed);
+            //calculate satellite position
+            eci = sgp4.FindPosition(dt);
+            //get look angle for observer to satellite
+            topo = obs.GetLookAngle(eci);
+            //convert satellite position to geodetic coordinates
+            geo = eci.ToGeodetic();
         }
 
-        void printName();
+        float calculateDistance(){
 
-        void addRanking(int n){
-            ranking = n;
         }
-
 
 };
 
