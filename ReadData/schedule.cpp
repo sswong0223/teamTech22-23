@@ -1,11 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include "sgp4-master/libsgp4/SGP4.h"
+#include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
 #include <vector>
 #include <string>
+
+using namespace std;
 
 int main() {
 
@@ -19,6 +21,7 @@ int main() {
     // Initialize variables for reading input file
     std::string buffer;
     std::fstream input("active.txt"); // The file of satellites is found in the debug folder
+    string line1, line2;
 
     //Initialize variables for scheduler
     //vector will be a temporary data type to hold satellites, need to decide on a better container to store data
@@ -27,66 +30,50 @@ int main() {
     vector<Satellite> schedule;
 
     // Read in data from active.txt file until you reach the end of the file
-    while(std::getline(input, buffer)){
+    while(getline(input, buffer)){
+        //read TLE lines
         getline(input, line1);
         getline(input, line2);
+
         line1.pop_back(); // Gets rid of carriage return character
         line2.pop_back(); // Gets rid of carriage return character
-        libsgp4::Tle tle1(line1, line2);
-        Satellite satellite(tle1);
+        //create a TLE object with line 1 and line 2 as arguments
+        libsgp4::Tle tle(line1, line2);
+        //create a satellite object with the tle as an argument
+        Satellite satellite(tle);
+        if(satellite.isLEO())
+        //add satellite object to a max heap prioritized by ranking
         satellites.push_back(satellite);
     }
-
-    satellites.at(0).printName();
+    //satellites.at(0).printName();
 
     return 0;
 }
 
-void createSchedule(){
-    /* Make a flowchart of ideas for the scheduling algorithm
-     *
-     * use greedy algorithm to determine order of satellites, also need to consider:
-     * - Which satellite is more "rare" on the schedule ( available to connect to the least)
-     * - What is the distance to ground station (aka what orbit is )- more distance = less stable
-     * - Angle of elevation
-     * - What information is being transmitted
-     * - What is the satellite's "job"
-     *
-     * You won't have all the questions to the questions above at this point in time, so just focus on
-     * planning out how you will implement the greedy algorithm in code and the logistics of how the schedule
-     * will work.
-     *
-    */
-
-    //once we determine order of satellites, for every satellite need to call calculateSat()
-    for(int i = 0; i < satellites.size(); i++){
-        //adding to scheduler when and were the antenna should point
-        scheduler.push_back(sat.calculateSat());
-        sat.addRanking(i);
+void createSchedule(vector<Satellite> schedule, vector<Satellite> satellites) {
+    //use greedy algorithm and consider ranks of all satellites to schedule satellites
+    //take satellite with the largest ranking from the max heap
+    //consider all acceptable access periods of the satellite, find the one with the earliest end time, place it on the schedule
+    //Possible changes: have ranking “tiers” and find the satellite with the earliest end time in the highest tier, then add it to the schedule
+    for (int i = 0; i < satellites.size(); i++) {
+        schedule.push_back(satellites[i]);
     }
-
-    /*
-     * Ouput:
-     * - How are we planning on storing the output of our algorithm?
-     * - Needs to be in a format that the front-end team can easily work with
-     */
-}
-
-//add satellites to satellites list, not yet to the scheduler
-void addSatellite(Satellite sat){
-    satellites.push_back(sat);
 }
 
 //to create a metric of the schedule’s effectiveness, would be useful to have count of number of satellites in the schedule
-int numSatellites(){
+int numSatellites(vector<Satellite> satellites){
     return satellites.size();
 }
 
-//when we want to print out the entire schedule
-void ToString(){
-    for(string s: schedule){
-        //if we change the data type to a class instead of a string, we don't need to extract the substrings
-        //to make the output all pretty, so wait to end to finish this function
-        cout << s << endl;
+string printSchedule(vector<Satellite> schedule){
+    for (int i = 0; i < schedule.size(); i++) {
+        //the satellites toString() will print the specifics for each satellite
+        schedule[i].toString();
     }
+
+    /*
+     * Output:
+     * - How are we planning on storing the output of our algorithm?
+     * - Needs to be in a format that the front-end team can easily work with
+     */
 }
