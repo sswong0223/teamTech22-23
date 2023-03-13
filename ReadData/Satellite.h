@@ -39,37 +39,17 @@ class Satellite {
             assignRank();
         }
 
+        bool isLEO();
+
         //function to calculate - Where and when the antenna should point over a 7-day period (coordinates,
         // angles as it changes over a 7-day period, take into account velocity of satellite moving)
-        void calculatePos(float timePassed){
-            dt = tle.Epoch().AddMinutes(timePassed);
-            //calculate satellite position
-            eci = sgp4.FindPosition(dt);
-            //get look angle for observer to satellite
-            topo = obs.GetLookAngle(eci);
-            //convert satellite position to geodetic coordinates
-            geo = eci.ToGeodetic();
-        }
+        void calculatePos(float timePassed);
 
-        float calculateDistance() {
-            //need to code calculation for distance between ground station and satellite
-            //ground station is 29°38'53.1"N 82°20'51.1"W on top of Weimer Hall
-            //angle = arccos(point1 * point2)
-            //distance = angle * pi * radius
-        }
+        float calculateDistance();
 
-        void assignRank(){
-            //need to code ranking system here (Aerospace team will hopefully provide this)
-            //assign variable rank with ranking
+        void assignRank();
 
-        }
-
-        void ToString(){
-            //need to figure out what output needs to be outputted for each satellite in the 7-day schedule
-            cout << eci << endl;
-            cout << topo << endl;
-            cout << geo << endl;
-        }
+        void toString();
 };
 
 #endif //TESTSGP4_SATELLITE_H
