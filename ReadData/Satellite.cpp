@@ -1,7 +1,11 @@
+//
+// Created by Clarissa Mac on 3/13/23.
+//
+
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include "sgp4-master/libsgp4/SGP4.h"
+#include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
 #include <vector>
@@ -9,79 +13,53 @@
 
 using namespace std;
 
-int main() {
-
-    /*
-    // Hard code test: delete later
-    std::string line1 = "1 00900U 64063C   23046.50614910  .00001371  00000+0  14455-2 0  9991";
-    std::string line2 = "2 00900  90.1810  45.4651 0027461  15.1398 149.1107 13.74104475904037";
-    libsgp4::Tle obj1(line1, line2);
-    std::cout << obj1.Name() << std::endl;
-*/
-    // Initialize variables for reading input file
-    std::string buffer;
-    std::fstream input("active.txt"); // The file of satellites is found in the debug folder
-    string line1, line2;
-
-    //Initialize variables for scheduler
-    //vector will be a temporary data type to hold satellites, need to decide on a better container to store data
-    //(maybe a priority queue/heap)
-    vector<Satellite> satellites;
-    vector<Satellite> schedule;
-
-    // Read in data from active.txt file until you reach the end of the file
-    while(getline(input, buffer)){
-        //read TLE lines
-        getline(input, line1);
-        getline(input, line2);
-
-        line1.pop_back(); // Gets rid of carriage return character
-        line2.pop_back(); // Gets rid of carriage return character
-        //create a TLE object with line 1 and line 2 as arguments
-        libsgp4::Tle tle(line1, line2);
-        //create a satellite object with the tle as an argument
-        Satellite satellite(tle);
-        //add satellite object to a max heap prioritized by ranking
-        satellites.push_back(satellite);
-    }
-    //satellites.at(0).printName();
-
-    return 0;
+//function to calculate - Where and when the antenna should point over a 7-day period (coordinates,
+// angles as it changes over a 7-day period, take into account velocity of satellite moving)
+void Satellite::calculatePos(float timePassed){
+    dt = tle.Epoch().AddMinutes(timePassed);
+    //calculate satellite position
+    eci = sgp4.FindPosition(dt);
+    //get look angle for observer to satellite
+    topo = obs.GetLookAngle(eci);
+    //convert satellite position to geodetic coordinates
+    geo = eci.ToGeodetic();
 }
 
-void createSchedule() {
-    //use greedy algorithm and consider ranks of all satellites to schedule satellites
-    //take satellite with the largest ranking from the max heap
-    //consider all acceptable access periods of the satellite, find the one with the earliest end time, place it on the schedule
-    //Possible changes: have ranking “tiers” and find the satellite with the earliest end time in the highest tier, then add it to the schedule
-    for (int i = 0; i < satellites.size(); i++) {
-        scheduler.push_back(satellites(i));
-    }
-}
-
-string printSchedule(){
-    for (int i = 0; i < scheduler.size(); i++) {
-        //the satellites toString() will print the specifics for each satellite
-        cout << scheduler[i] << endl;
-    }
-
+bool Satellite::isLEO(){
     /*
-     * Output:
-     * - How are we planning on storing the output of our algorithm?
-     * - Needs to be in a format that the front-end team can easily work with
+     * * We don't need to even consider the satellites that aren't LEO for the scheduler
+        Main Requirements for LEO:
+        Inclination: 0-90
+        Mean motion: 14-17
+
+        Specifications that also need to be considered are:
+        - A minimum elevation above the local horizon and obstructions
+        - A minimum duration of 1 minute for an acceptable access
+        - A minimum range during the access
+        - A preferred direction of travel (ascending pass or descending pass)
+        - Access only during “mutual view” where the satellite is in simultaneous view of both the ground control and second designated location
+        - A maximum interval between accesses
      */
 }
 
-//to create a metric of the schedule’s effectiveness, would be useful to have count of number of satellites in the schedule
-int numSatellites(){
-    return satellites.size();
+float Satellite::calculateDistance() {
+    //need to code calculation for distance between ground station and satellite
+    //ground station is 29°38'53.1"N 82°20'51.1"W on top of Weimer Hall
+    //angle = arccos(point1 * point2)
+    //distance = angle * pi * radius
 }
 
-//when we want to print out the entire schedule
-void ToString(){
-    for(string s: schedule){
-        //if we change the data type to a class instead of a string, we don't need to extract the substrings
-        //to make the output all pretty, so wait to end to finish this function
-        cout << s << endl;
-    }
+void Satellite::assignRank(){
+    //need to code ranking system here (Aerospace team will hopefully provide this)
+    //assign variable rank with ranking
+
+}
+
+void Satellite::toString(){
+    //need to figure out what output needs to be outputted for each satellite in the 7-day schedule
+    //eci can't be outputted as it is, so need to figure out what attributes of eci we need
+
+    //cout << eci << endl;
+    cout << topo << endl;
+    cout << geo << endl;
 }
