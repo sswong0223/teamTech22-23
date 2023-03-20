@@ -10,6 +10,7 @@
 #include "libsgp4/Tle.h"
 #include <vector>
 #include <string>
+#include <math.h>
 
 using namespace std;
 
@@ -47,6 +48,20 @@ float Satellite::calculateDistance() {
     //ground station is 29°38'53.1"N 82°20'51.1"W on top of Weimer Hall
     //angle = arccos(point1 * point2)
     //distance = angle * pi * radius
+    double baseLat = 0.834765;
+    double baseLon = -1.441374;
+    double baseAlt = .009;
+
+    double earthRadius = 6371.0; // Earth's radius in kilometers
+    double dLat = this->geo.latitude - baseLat;
+    double dLon = this->geo.longitude - baseLon;
+    double a = sin(dLat/2) * sin(dLat/2) +
+               cos(baseLat) * cos(this->geo.latitude) *
+               sin(dLon/2) * sin(dLon/2);
+    double c = 2 * atan2(sqrt(a), sqrt(1-a));
+    double d = earthRadius * c;
+    double dh = this->geo.altitude - baseAlt;
+    return sqrt(d * d + dh * dh);
 }
 
 void Satellite::assignRank(){
