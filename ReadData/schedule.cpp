@@ -6,9 +6,12 @@
 #include "libsgp4/Tle.h"
 #include <vector>
 #include <string>
+#include <queue>
 
 using namespace std;
-
+// returns vector of min heap priority queues and takes in vector of satellite objects
+vector<priority_queue<Satellite, vector<int>, greater<int>>> addSatelliteToHeaps(Satellite& sats, int& numRanks); //might change to string if time is in string
+//operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
 
     /*
@@ -19,6 +22,7 @@ int main() {
     std::cout << obj1.Name() << std::endl;
 */
     // Initialize variables for reading input file
+    int numRanks = 8; //!!!change later!!!
     std::string buffer;
     std::fstream input("active.txt"); // The file of satellites is found in the debug folder
     string line1, line2;
@@ -28,6 +32,7 @@ int main() {
     //(maybe a priority queue/heap)
     vector<Satellite> satellites;
     vector<Satellite> schedule;
+
 
     // Read in data from active.txt file until you reach the end of the file
     while(getline(input, buffer)){
@@ -76,4 +81,8 @@ string printSchedule(vector<Satellite> schedule){
      * - How are we planning on storing the output of our algorithm?
      * - Needs to be in a format that the front-end team can easily work with
      */
+}
+
+vector<priority_queue<int, vector<int>, greater<int>>> addSatelliteToHeaps(Satellite& sats, int& numRanks){
+
 }
