@@ -27,20 +27,9 @@ void Satellite::calculatePos(float timePassed){
 }
 
 bool Satellite::isLEO(){
-    /*
-     * * We don't need to even consider the satellites that aren't LEO for the scheduler
-        Main Requirements for LEO:
-        Inclination: 0-90
-        Mean motion: 14-17
-
-        Specifications that also need to be considered are:
-        - A minimum elevation above the local horizon and obstructions
-        - A minimum duration of 1 minute for an acceptable access
-        - A minimum range during the access
-        - A preferred direction of travel (ascending pass or descending pass)
-        - Access only during “mutual view” where the satellite is in simultaneous view of both the ground control and second designated location
-        - A maximum interval between accesses
-     */
+    if((tle.Inclination(true) < 0 && tle.Inclination(true) > 90) || (tle.MeanMotion() < 14 && tle.MeanMotion() > 17)) {
+        rank = 0;
+    }
 }
 
 float Satellite::calculateDistance() {
@@ -65,7 +54,8 @@ float Satellite::calculateDistance() {
 }
 
 void Satellite::assignRank(){
-    //need to code ranking system here (Aerospace team will hopefully provide this)
+    //need to code ranking system here (
+
     //assign variable rank with ranking
 
 }
