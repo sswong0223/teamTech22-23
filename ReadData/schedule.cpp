@@ -7,10 +7,12 @@
 #include <vector>
 #include <string>
 #include <queue>
+#include <functional>
 
 using namespace std;
-// returns vector of min heap priority queues and takes in vector of satellite objects
-vector<priority_queue<Satellite, vector<int>, greater<int>>> addSatelliteToHeaps(Satellite& sats, int& numRanks); //might change to string if time is in string
+// returns vector of min heap priority queues and takes in 1 satellite object,
+// & vector of priority_queue that it needs to be added into
+void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, greater<int>>>& heap, Satellite& sat); //might change to string if time is in string
 //operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
 
@@ -83,6 +85,15 @@ string printSchedule(vector<Satellite> schedule){
      */
 }
 
-vector<priority_queue<int, vector<int>, greater<int>>> addSatelliteToHeaps(Satellite& sats, int& numRanks){
-
+void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, greater<Satellite>>>& heap, Satellite& sat){
+    //add more if statements if more ranks
+    if(sat.getRank() == 1){
+        heap[0].push(sat); //push error here because greater::operator won't work correctly?
+    }
+    else if(sat.getRank() == 2){
+        heap[1].push(sat);
+    }
+    else if(sat.getRank() == 3){
+        heap[2].push(sat);
+    }
 }
