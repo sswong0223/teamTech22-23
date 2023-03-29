@@ -27,6 +27,8 @@ class Satellite {
         libsgp4::CoordGeodetic geo;
         libsgp4::Observer obs;
         libsgp4::SGP4 sgp4;
+        string startTime;
+        string endTime; //month, day, military time probably
         int rank;
 
     public:
@@ -50,6 +52,20 @@ class Satellite {
         void assignRank();
 
         void toString();
+
+        int getRank(){
+            return rank;
+        }
+
+        string getEndTime(){
+            return endTime;
+        }
+
+        //work on this after we know how endTime is formatted
+        bool operator> (const Satellite& rSat){
+            return true;
+        }
 };
+
 
 #endif //TESTSGP4_SATELLITE_H
