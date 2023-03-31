@@ -2,8 +2,7 @@
 // Created by Clarissa Mac on 2/28/23.
 //
 
-#ifndef TESTSGP4_SATELLITE_H
-#define TESTSGP4_SATELLITE_H
+#pragma once
 
 #include "libsgp4/Tle.h"
 #include "libsgp4/DateTime.h"
@@ -35,10 +34,13 @@ class Satellite {
         //constructor
         //initialized some class object variables right when the constructor is built b/c most of them have no default constructor
         //change obs and eci inputs later as needed
-        Satellite(libsgp4::Tle tle1): tle(tle1), sgp4(tle), obs(29,82,1), eci(dt, 1, 1, 1){
+        Satellite(libsgp4::Tle tle1, libsgp4::DateTime currentTime): tle(tle1), dt(currentTime), eci(dt, 1, 1, 1), obs(29,82,1), sgp4(tle){
             //this->tle = tle1;
             //sgp4(tle);
+            eci = sgp4.FindPosition(dt);
+            geo = eci.ToGeodetic();
             assignRank();
+            // calculate passes
         }
 
         bool isLEO();
@@ -50,6 +52,7 @@ class Satellite {
         float calculateDistance();
 
         void assignRank();
+
 
         void toString();
 
@@ -65,7 +68,9 @@ class Satellite {
         bool operator> (const Satellite& rSat){
             return true;
         }
+
+        void generatePasses();
+
 };
 
 
-#endif //TESTSGP4_SATELLITE_H
