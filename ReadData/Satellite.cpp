@@ -8,9 +8,11 @@
 #include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
+#include "libsgp4/Eci.h"
 #include <vector>
 #include <string>
 #include <math.h>
+#include <cmath>
 
 using namespace std;
 
@@ -27,9 +29,10 @@ void Satellite::calculatePos(float timePassed){
 }
 
 bool Satellite::isLEO(){
-    if((tle.Inclination(true) < 0 && tle.Inclination(true) > 90) || (tle.MeanMotion() < 14 && tle.MeanMotion() > 17)) {
-        rank = 0;
+    if((tle.Inclination(true) > 0 && tle.Inclination(true) < 90) || (tle.MeanMotion() > 14 && tle.MeanMotion() < 17)) {
+        return true;
     }
+    return false;
 }
 
 float Satellite::calculateDistance() {
@@ -53,18 +56,29 @@ float Satellite::calculateDistance() {
     return sqrt(d * d + dh * dh);
 }
 
-void Satellite::assignRank(){
-    //need to code ranking system here (
+void Satellite::assignRank() {
+    auto distance = calculateDistance();
+    auto mean_motion = tle.MeanMotion();
+    auto elevation = this->geo.altitude;
+    auto angle_of_elevation = atan(elevation/distance); // arctan (elevation / distance)
 
-    //assign variable rank with ranking
-
+    if (!isLEO()) {
+        rank = 0; // satellite is tossed out when 0
+    } else if (mean_motion >= 17 && angle_of_elevation >= 60) {
+        rank = 1;
+    } else if (15 <= mean_motion && mean_motion <= 16 && 30 <= angle_of_elevation && angle_of_elevation < 60) {
+        rank = 2;
+    }
+     else if (14 <= mean_motion && mean_motion < 15 && angle_of_elevation < 30) {
+        rank =3;
+     }
 }
 
 void Satellite::toString(){
     //need to figure out what output needs to be outputted for each satellite in the 7-day schedule
     //eci can't be outputted as it is, so need to figure out what attributes of eci we need
+}
 
-    //cout << eci << endl;
-    cout << topo << endl;
-    cout << geo << endl;
+void Satellite::generatePasses(){
+    
 }
