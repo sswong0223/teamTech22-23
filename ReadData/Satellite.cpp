@@ -8,7 +8,10 @@
 #include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
+#include "libsgp4/DateTime.h"
+#include "libsgp4/Observer.h"
 #include "libsgp4/Eci.h"
+#include "libsgp4/CoordTopocentric.h"
 #include <vector>
 #include <string>
 #include <math.h>
@@ -80,5 +83,46 @@ void Satellite::toString(){
 }
 
 void Satellite::generatePasses(){
+    // Get current time
+    libsgp4::DateTime now(dt);
+
+// Loop over the next 24 hours
+    const int numSteps = 24 * 60;
+    const double timeStep = 1.0 / 60.0;
+    std::vector<libsgp4::DateTime> times(numSteps);
+    std::vector<libsgp4::CoordTopocentric> positions(numSteps);
+    for (int i = 0; i < numSteps; ++i) {
+// Calculate time
+        times[i] = now.AddMinutes(i * timeStep);
+// Calculate satellite position
+        libsgp4::Eci eci = sgp4.FindPosition(times[i]);
+        libsgp4::CoordTopocentric topoC = obs.GetLookAngle(eci);
+// Save position
+        positions[i] = topoC;
+    }
+// Flibsgp4::DateTime ability periods
+    libsgp4::DateTime visibleStart, visibleEnd;
+    bool visible = false;
+    for (int i = 0; i < numSteps; ++i) {
+        if (positions[i].elevation > 0) {
+            if (!visible) {
+                visibleStart = times[i];
+                visible = true;
+            }
+            visibleEnd = times[i];
+        } else {
+            if (visible) {
+                std::pair access(visibleStart, visibleEnd);
+                passes.push_back(access);
+                std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+                visible = false;
+            }
+        }
+    }
     
+    if (visible) {
+        std::pair access(visibleStart, visibleEnd);
+        passes.push_back(access);
+        std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+    }
 }
