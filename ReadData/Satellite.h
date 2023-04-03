@@ -18,7 +18,8 @@ class Satellite {
     private:
         libsgp4::Tle tle;
         //duration that the satellite will communicate with the ground station
-        //libsgp4::SGP4 duration;
+        std::vector<std::pair<libsgp4::DateTime, libsgp4::DateTime>> passes;
+        // vector of start time end time pairs
         //start time?
         libsgp4::DateTime dt;
         libsgp4::Eci eci;
@@ -27,7 +28,7 @@ class Satellite {
         libsgp4::Observer obs;
         libsgp4::SGP4 sgp4;
         string startTime;
-        string endTime; //month, day, military time probably
+        libsgp4::DateTime endTime; //month, day, military time probably
         int rank;
 
     public:
@@ -60,17 +61,31 @@ class Satellite {
             return rank;
         }
 
-        string getEndTime(){
+        libsgp4::DateTime getEndTime() const{
             return endTime;
         }
 
         //work on this after we know how endTime is formatted
-        bool operator> (const Satellite& rSat){
-            return true;
+        bool operator> (const Satellite& rSat) const{
+            if(this->endTime.Compare(rSat.getEndTime()) == 1) //endTime > rSat.getEndTime()
+                return true;
+            else
+                false;
         }
 
         void generatePasses();
 
+};
+
+class satComparator{
+public:
+    int operator()(const Satellite& lSat, const Satellite& rSat){
+        if(lSat.getEndTime().Compare(rSat.getEndTime()) == 1) //endTime > rSat.getEndTime()
+            return true;
+        else
+            return false;
+
+    }
 };
 
 
