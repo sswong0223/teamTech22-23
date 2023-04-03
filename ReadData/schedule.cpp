@@ -13,21 +13,23 @@
 using namespace std;
 // returns vector of min heap priority queues and takes in 1 satellite object,
 // & vector of priority_queue that it needs to be added into
-void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, greater<int>>>& heap, Satellite& sat); //might change to string if time is in string
+void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); //might change to string if time is in string
 //operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
     // DEFAULT DATE TIME
     //needs to be military udt time
 
-    libsgp4::DateTime currentTime(DateTime::Now());
+    //libsgp4::DateTime currentTime(DateTime::Now());
+    libsgp4::DateTime time = libsgp4::DateTime(2022, 10, 19, 13, 50, 45);
 
     // Hard code test: delete later
-    // Name: STARLINK-4655
+    // Name: Starlink SSC: 47862  test starlink from Andrew
 
-    std::string line1 = "1 53777U 22111E   23090.20735931  .00040371  00000+0  25383-2 0  9997";
-    std::string line2 = "2 53777  53.2173  57.8182 0001266 122.7022 237.4093 15.08867645 30678";
+    std::string line1 = "1 47862U 21021U   22292.11715278 -.00011170  00000-0 -74838-3 0  2923";
+    std::string line2 = "2 47862  53.0547  57.3135 0001386  72.2469 132.6029 15.06412172    18";
     libsgp4::Tle obj1(line1, line2);
-    Satellite satellite(obj1, currentTime);
+    Satellite satellite(obj1, time);
+    satellite.generatePasses();
 
     /*
     // Initialize variables for reading input file
@@ -95,16 +97,16 @@ string printSchedule(vector<Satellite> schedule){
      */
 }
 
-void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, greater<Satellite>>>& heap, Satellite& sat){
+void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, satComparator>>& heap, Satellite& sat){
     //add more if statements if more ranks
     if(sat.getRank() == 1){
-        //heap[0].push(sat); //push error here because greater::operator won't work correctly?
+        heap[0].push(sat); //push error here because greater::operator won't work correctly?
     }
     else if(sat.getRank() == 2){
-        //heap[1].push(sat);
+        heap[1].push(sat);
     }
     else if(sat.getRank() == 3){
-        //heap[2].push(sat);
+        heap[2].push(sat);
     }
 }
 
