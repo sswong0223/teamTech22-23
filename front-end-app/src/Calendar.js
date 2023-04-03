@@ -9,7 +9,8 @@ import {
   lastDayOfWeek,
   getWeek,
   addWeeks,
-  subWeeks
+  subWeeks, 
+  getDay
 } from "date-fns";
 
 const Calendar = ({ showDetailsHandle }) => {
@@ -67,7 +68,7 @@ const Calendar = ({ showDetailsHandle }) => {
   const renderDays = () => {
     const dateFormat = "EEE";
     const days = [];
-    let startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
+    let startDate = startOfWeek(currentMonth, { weekStartsOn: getDay(new Date) });
     for (let i = 0; i < 7; i++) {
       days.push(
         <div className="col col-center" key={i}>
@@ -78,8 +79,8 @@ const Calendar = ({ showDetailsHandle }) => {
     return <div className="days row">{days}</div>;
   };
   const renderCells = () => {
-    const startDate = startOfWeek(currentMonth, { weekStartsOn: 1 });
-    const endDate = lastDayOfWeek(currentMonth, { weekStartsOn: 1 });
+    const startDate = startOfWeek(currentMonth, { weekStartsOn: getDay(new Date())});
+    const endDate = lastDayOfWeek(currentMonth, { weekStartsOn: getDay (new Date()) + 7 % 7});
     const dateFormat = "d";
     const rows = [];
     let days = [];
@@ -123,15 +124,15 @@ const Calendar = ({ showDetailsHandle }) => {
   const renderFooter = () => {
     return (
       <div className="header row flex-middle">
-        <div className="col col-start">
+        {/* <div className="col col-start">
           <div className="icon" onClick={() => changeWeekHandle("<<")}>
-            prev week
+            Previous
           </div>
         </div>
         <div>{currentWeek}</div>
         <div className="col col-end" onClick={() => changeWeekHandle(">>")}>
-          <div className="icon">next week</div>
-        </div>
+          <div className="icon">Next</div>
+        </div> */}
       </div>
     );
   };
