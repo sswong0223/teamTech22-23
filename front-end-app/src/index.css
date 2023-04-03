@@ -2,7 +2,7 @@
   font-family: sans-serif;
   text-align: center;
   min-height: 700px;
-  background-color: #979797;
+  background-color: #ffffff;
   margin: 0;
   padding: 20px;
   width: 100%;
@@ -33,12 +33,13 @@
 /* VARIABLES */
 
 :root {
-  --main-color: #1a8fff;
+  --main-color: #ee43f7;
   --text-color: #000;
-  --text-color-light: #ccc;
-  --border-color: #eee;
-  --bg-color: #f9f9f9;
-  --neutral-color: #fff;
+  --text-color-light: #000000;
+  --border-color: #2d2d2d;
+  --bg-color: #ffffff;
+  --neutral-color: #ffffff;
+  --whitespace-color : #bcb9b9;
 }
 
 /* GENERAL */
@@ -61,8 +62,8 @@ header {
   display: block;
   width: 100%;
   padding: 1.75em 0;
-  border-bottom: 1px solid var(--border-color);
-  background: var(--neutral-color);
+  border-bottom: 2px solid var(--border-color);
+  background: var(--whitespace-color);
 }
 
 header #logo {
@@ -125,7 +126,7 @@ main {
   display: block;
   position: relative;
   width: 100%;
-  background: var(--neutral-color);
+  background: var(--whitespace-color);
   border: 1px solid var(--border-color);
 }
 
@@ -134,7 +135,7 @@ main {
   font-weight: 700;
   font-size: 115%;
   padding: 1.5em 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .calendar .header .icon {
@@ -160,9 +161,9 @@ main {
   text-transform: uppercase;
   font-weight: 400;
   color: var(--text-color-light);
-  font-size: 70%;
+  font-size: 100%;
   padding: 0.75em 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 2px solid var(--border-color);
 }
 
 .calendar .body .cell {
@@ -183,12 +184,12 @@ main {
 
 .calendar .body .selected {
   border-left: 10px solid transparent;
-  border-image: linear-gradient(45deg, #1a8fff 0%, #53cbf1 40%);
+  border-image: linear-gradient(45deg, #ba0ca3 0%, #660856 40%);
   border-image-slice: 1;
 }
 .calendar .body .today {
   border-left: 10px solid transparent;
-  border-image: linear-gradient(45deg, #ff1a79 0%, #eb82b3 40%);
+  border-image: linear-gradient(45deg, #801111 0%, #a81616 40%);
   border-image-slice: 1;
 }
 .calendar .body .row {
@@ -236,8 +237,8 @@ main {
   transition: 0.5s ease-in;
 }
 .calendar .body .cell.today .bg {
-  color: #ff1a79;
-  opacity: 0.05;
+  color: #ff0a01;
+  opacity: 0.08;
 }
 
 .calendar .body .col {
