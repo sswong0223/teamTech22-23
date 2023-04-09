@@ -16,24 +16,24 @@ using namespace std;
 void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); //might change to string if time is in string
 //operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
-    // DEFAULT DATE TIME
-    //needs to be military udt time
 
-    //libsgp4::DateTime currentTime(DateTime::Now());
-    libsgp4::DateTime time = libsgp4::DateTime(2022, 10, 19, 13, 50, 45);
-
-    // Hard code test: delete later
+    /*
+    // Hard code test:
     // Name: Starlink SSC: 47862  test starlink from Andrew
-
+    libsgp4::DateTime time = libsgp4::DateTime(2022, 10, 19, 13, 50, 45);
     std::string line1 = "1 47862U 21021U   22292.11715278 -.00011170  00000-0 -74838-3 0  2923";
     std::string line2 = "2 47862  53.0547  57.3135 0001386  72.2469 132.6029 15.06412172    18";
     libsgp4::Tle obj1(line1, line2);
     Satellite satellite(obj1, time);
     satellite.generatePasses();
+    */
 
-    /*
+    // DEFAULT DATE TIME
+    //needs to be military udt time
+    libsgp4::DateTime currentTime(libsgp4::DateTime::Now());
+
     // Initialize variables for reading input file
-    int numRanks = 8; //!!!change later!!!
+    int numRanks = 3; //!!!change later!!!
     std::string buffer;
     //updated March 31,2022 1:48 pm est
     std::fstream input("celestrakList.txt"); // The file of satellites is found in the debug folder
@@ -44,7 +44,6 @@ int main() {
     //(maybe a priority queue/heap)
     vector<Satellite> satellites;
     vector<Satellite> schedule;
-
 
 
     // Read in data from active.txt file until you reach the end of the file
@@ -60,12 +59,17 @@ int main() {
         libsgp4::Tle tle(line1, line2);
         //create a satellite object with the tle as an argument
         Satellite satellite(tle, currentTime);
-        if(satellite.isLEO())
-        //add satellite object to a max heap prioritized by ranking
-        satellites.push_back(satellite);
+        vector<priority_queue<Satellite, vector<Satellite>, satComparator>> heaps;
+        if(satellite.isLEO()){
+            //satellite.generatePasses();
+            satellites.push_back(satellite);
+            //add satellite object to a max heap prioritized by ranking
+            //addSatelliteToHeaps(heaps, satellite);
+        }
+        
+
     }
-    //satellites.at(0).printName();
-*/
+
     return 0;
 }
 
