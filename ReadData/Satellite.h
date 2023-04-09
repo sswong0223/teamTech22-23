@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <vector>
 #include "libsgp4/Tle.h"
 #include "libsgp4/DateTime.h"
 #include "libsgp4/Eci.h"
@@ -17,18 +18,18 @@ using namespace std;
 class Satellite {
     private:
         libsgp4::Tle tle;
+
         //duration that the satellite will communicate with the ground station
-        std::vector<std::pair<libsgp4::DateTime, libsgp4::DateTime>> passes;
         // vector of start time end time pairs
-        //start time?
+        std::vector<std::pair<libsgp4::DateTime, libsgp4::DateTime>> passes;
+
+
         libsgp4::DateTime dt;
         libsgp4::Eci eci;
         libsgp4::CoordTopocentric topo;
         libsgp4::CoordGeodetic geo;
         libsgp4::Observer obs;
         libsgp4::SGP4 sgp4;
-        string startTime;
-        libsgp4::DateTime endTime; //month, day, military time probably
         int rank;
 
     public:
@@ -38,6 +39,7 @@ class Satellite {
         Satellite(libsgp4::Tle tle1, libsgp4::DateTime currentTime): tle(tle1), dt(currentTime), eci(dt, 1, 1, 1), obs(29,82,1), sgp4(tle){
             //this->tle = tle1;
             //sgp4(tle);
+            // OBS: 29, 82, 1
             eci = sgp4.FindPosition(dt);
             geo = eci.ToGeodetic();
             assignRank();
@@ -61,16 +63,16 @@ class Satellite {
             return rank;
         }
 
-        libsgp4::DateTime getEndTime() const{
-            return endTime;
+        libsgp4::DateTime getEarliestEndTime() const{
+            return passes.at(0).second;
         }
 
         //work on this after we know how endTime is formatted
         bool operator> (const Satellite& rSat) const{
-            if(this->endTime.Compare(rSat.getEndTime()) == 1) //endTime > rSat.getEndTime()
+            if(getEarliestEndTime().Compare(rSat.getEarliestEndTime()) == 1) //endTime > rSat.getEndTime()
                 return true;
             else
-                false;
+                return false;
         }
 
         void generatePasses();
@@ -80,12 +82,10 @@ class Satellite {
 class satComparator{
 public:
     int operator()(const Satellite& lSat, const Satellite& rSat){
-        if(lSat.getEndTime().Compare(rSat.getEndTime()) == 1) //endTime > rSat.getEndTime()
+        if(lSat.getEarliestEndTime().Compare(rSat.getEarliestEndTime()) == 1) //endTime > rSat.getEndTime()
             return true;
         else
             return false;
 
     }
 };
-
-
