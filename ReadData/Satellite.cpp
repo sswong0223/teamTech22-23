@@ -69,12 +69,13 @@ void Satellite::assignRank() {
         rank = 0; // satellite is tossed out when 0
     } else if (mean_motion >= 17 && angle_of_elevation >= 60) {
         rank = 1;
-    } else if (15 <= mean_motion && mean_motion <= 16 && 30 <= angle_of_elevation && angle_of_elevation < 60) {
+    } else if ((15 <= mean_motion && mean_motion <= 16) && (30 <= angle_of_elevation)) {
         rank = 2;
+    } else if((10 <= angle_of_elevation)) {
+        rank = 3;
+     } else {
+        rank = 0;
     }
-     else if (14 <= mean_motion && mean_motion < 15 && angle_of_elevation < 30) {
-        rank =3;
-     }
 }
 
 void Satellite::toString(){
@@ -87,23 +88,23 @@ void Satellite::generatePasses(){
     libsgp4::DateTime now(dt);
 
 // Loop over the next 24 hours
-    const int numSteps = 24 * 60;
-    const double timeStep = 1.0 / 60.0;
+    const int numSteps = 24 * 60 * 60;
     std::vector<libsgp4::DateTime> times(numSteps);
     std::vector<libsgp4::CoordTopocentric> positions(numSteps);
-    for (int i = 0; i < numSteps; ++i) {
-// Calculate time
-        times[i] = now.AddMinutes(i * timeStep);
-// Calculate satellite position
-        libsgp4::Eci eci = sgp4.FindPosition(times[i]);
-        libsgp4::CoordTopocentric topoC = obs.GetLookAngle(eci);
-// Save position
+    for (unsigned long i = 0; i < numSteps; ++i) {
+        // Calculate time
+        times[i] = now.AddSeconds((double)i);
+        // Calculate satellite position
+        libsgp4::Eci eciNext = sgp4.FindPosition(times[i]);
+        libsgp4::CoordTopocentric topoC = obs.GetLookAngle(eciNext);
+        // Save position
         positions[i] = topoC;
     }
-// Flibsgp4::DateTime ability periods
+
+    // libsgp4::DateTime visibility periods
     libsgp4::DateTime visibleStart, visibleEnd;
     bool visible = false;
-    for (int i = 0; i < numSteps; ++i) {
+    for (unsigned int i = 0; i < numSteps; ++i) {
         if (positions[i].elevation > 0) {
             if (!visible) {
                 visibleStart = times[i];
@@ -114,15 +115,17 @@ void Satellite::generatePasses(){
             if (visible) {
                 std::pair access(visibleStart, visibleEnd);
                 passes.push_back(access);
-                std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+                //std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
                 visible = false;
             }
         }
     }
-    
+
     if (visible) {
         std::pair access(visibleStart, visibleEnd);
         passes.push_back(access);
-        std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+        //std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
     }
+
 }
+
