@@ -13,7 +13,7 @@
 using namespace std;
 // returns vector of min heap priority queues and takes in 1 satellite object,
 // & vector of priority_queue that it needs to be added into
-void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); //might change to string if time is in string
+// void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); implemented into main function
 //operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
 
@@ -45,6 +45,13 @@ int main() {
     vector<Satellite> satellites;
     vector<Satellite> schedule;
 
+    vector<priority_queue<Satellite>> heaps;
+    priority_queue<Satellite> queue1;
+    priority_queue<Satellite> queue2;
+    priority_queue<Satellite> queue3;
+    heaps.push_back(queue1);
+    heaps.push_back(queue2);
+    heaps.push_back(queue3);
 
     // Read in data from active.txt file until you reach the end of the file
     while(getline(input, buffer)){
@@ -59,28 +66,41 @@ int main() {
         libsgp4::Tle tle(line1, line2);
         //create a satellite object with the tle as an argument
         Satellite satellite(tle, currentTime);
-        vector<priority_queue<Satellite, vector<Satellite>, satComparator>> heaps;
+
         if(satellite.isLEO()){
-            //satellite.generatePasses();
-            satellites.push_back(satellite);
+            satellite.generatePasses();
+            string info = satellite.toString();
+            //satellites.push_back(satellite);
             //add satellite object to a max heap prioritized by ranking
-            //addSatelliteToHeaps(heaps, satellite);
+            if(satellite.getRank() == 1)
+                heaps[0].push(satellite); //push error here because greater::operator won't work correctly
+            else if(satellite.getRank() == 2)
+                heaps[1].push(satellite);
+            else if(satellite.getRank() == 3)
+                heaps[2].push(satellite);
+
         }
-        
+
 
     }
 
     return 0;
 }
 
-void createSchedule(vector<Satellite> schedule, vector<Satellite> satellites) {
+void createSchedule(vector<Satellite> schedule, vector<priority_queue<Satellite>> heaps) {
     //use greedy algorithm and consider ranks of all satellites to schedule satellites
     //take satellite with the largest ranking from the max heap
     //consider all acceptable access periods of the satellite, find the one with the earliest end time, place it on the schedule
     //Possible changes: have ranking “tiers” and find the satellite with the earliest end time in the highest tier, then add it to the schedule
-    for (int i = 0; i < satellites.size(); i++) {
-        schedule.push_back(satellites[i]);
+
+    /*schdeule.push_back(heaps[0][0]); // add first satellite to schedule
+    heaps[0][0].pop(); // remove first satellite
+    for(heap_num = 0; heap_num < 3; heapm++{ > 0){
+
     }
+                while(heap[heap_num].size())
+
+    }*/
 }
 
 //to create a metric of the schedule’s effectiveness, would be useful to have count of number of satellites in the schedule
@@ -101,6 +121,7 @@ string printSchedule(vector<Satellite> schedule){
      */
 }
 
+/*
 void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, satComparator>>& heap, Satellite& sat){
     //add more if statements if more ranks
     if(sat.getRank() == 1){
@@ -112,13 +133,4 @@ void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, sat
     else if(sat.getRank() == 3){
         heap[2].push(sat);
     }
-}
-
-float radiansToDegrees(float radians){
-    float degrees ;
-
-    degrees = radians * 180 / M_PI ;
-
-    return degrees;
-
-}
+}*/
