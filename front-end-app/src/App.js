@@ -2,6 +2,8 @@ import "./index.css";
 import { useState } from "react";
 import Calendar from "./Calendar";
 import Details from "./Details";
+import date from "./datePicker"
+import datePicker from "./datePicker";
 
 export default function App() {
   const [showDetails, setShowDetails] = useState(false);
@@ -12,9 +14,16 @@ export default function App() {
     setShowDetails(true);
   };
 
+  function storeInput() {
+    var inputValue = document.getElementById("myInput").value;
+    // Do something with the input value stored in the variable
+  }
+
   return (
     <div className="App">
       <h1>Week View Calendar</h1>
+      <input type="text" placeholder="mm/dd/yyyy" id="myInput"> </input>
+      <button onclick="storeInput()">Store Input</button>
       <br />
       <Calendar showDetailsHandle={showDetailsHandle} />
       <br />
