@@ -63,29 +63,50 @@ void Satellite::assignRank() {
     auto distance = calculateDistance();
     auto mean_motion = tle.MeanMotion();
     auto elevation = this->geo.altitude;
-    auto angle_of_elevation = atan(elevation/distance); // arctan (elevation / distance)
+    //auto angle_of_elevation = atan(elevation/distance); // arctan (elevation / distance)
 
     if (!isLEO()) {
         rank = 0; // satellite is tossed out when 0
-    } else if (mean_motion >= 17 && angle_of_elevation >= 60) {
+    } else if (mean_motion >= 17 && maxElevation >= 60) {
         rank = 1;
-    } else if ((15 <= mean_motion && mean_motion <= 16) && (30 <= angle_of_elevation)) {
+    } else if ((15 <= mean_motion && mean_motion <= 16) && (30 <= maxElevation)) {
         rank = 2;
-    } else if((10 <= angle_of_elevation)) {
+    } else if((10 <= maxElevation)) {
         rank = 3;
-     } else {
+    } else {
         rank = 0;
     }
 }
 
-void Satellite::toString(){
-    //need to figure out what output needs to be outputted for each satellite in the 7-day schedule
-    //eci can't be outputted as it is, so need to figure out what attributes of eci we need
+libsgp4::DateTime Satellite::getStartTime(){
+    return startTime;
+}
+
+libsgp4::DateTime Satellite::getEndTime(){
+    return endTime;
+}
+
+libsgp4::DateTime Satellite::setStartTime(libsgp4::DateTime st){
+    startTime = st;
+}
+
+libsgp4::DateTime Satellite::setEndTime(libsgp4::DateTime et){
+    endTime = et;
+}
+
+string Satellite::toString(){
+    string satInfo = tle.Name();
+    satInfo.append(" ");
+    satInfo.append(startTime.ToString());
+    satInfo.append(" ");
+    satInfo.append(endTime.ToString());
+    return satInfo;
 }
 
 void Satellite::generatePasses(){
     // Get current time
     libsgp4::DateTime now(dt);
+
 
 // Loop over the next 24 hours
     const int numSteps = 24 * 60 * 60;
@@ -106,6 +127,9 @@ void Satellite::generatePasses(){
     bool visible = false;
     for (unsigned int i = 0; i < numSteps; ++i) {
         if (positions[i].elevation > 0) {
+            if(maxElevation < positions[i].elevation){
+                maxElevation = positions[i].elevation;
+            }
             if (!visible) {
                 visibleStart = times[i];
                 visible = true;
@@ -125,6 +149,10 @@ void Satellite::generatePasses(){
         std::pair access(visibleStart, visibleEnd);
         passes.push_back(access);
         //std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+    }
+    if(passes.size() > 0){
+        startTime = passes.at(0).first;
+        endTime = passes.at(0).second;
     }
 
 }
