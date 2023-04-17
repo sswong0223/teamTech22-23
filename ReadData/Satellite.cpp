@@ -100,10 +100,17 @@ void Satellite::toString(){
     endString = endTime.ToString();
 }
 
+int Satellite::getRank(){
+    return rank;
+}
+
+libsgp4::DateTime Satellite::getEarliestEndTime() const{
+    return passes.at(0).second;
+}
+
 void Satellite::generatePasses(){
     // Get current time
     libsgp4::DateTime now(dt);
-
 
 // Loop over the next 24 hours
     const int numSteps = 24 * 60 * 60;
@@ -136,7 +143,7 @@ void Satellite::generatePasses(){
             if (visible) {
                 std::pair access(visibleStart, visibleEnd);
                 passes.push_back(access);
-                //std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
+                std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
                 visible = false;
             }
         }
@@ -161,5 +168,12 @@ int Satellite::getNumPasses() {
 
 bool Satellite::getConstrSuccess() {
     return constructorSuccess;
+}
+
+bool Satellite::operator< (const Satellite& rSat) const{
+    if(getEarliestEndTime().Compare(rSat.getEarliestEndTime()) == 1) //endTime > rSat.getEndTime()
+        return true;
+    else
+        return false;
 }
 
