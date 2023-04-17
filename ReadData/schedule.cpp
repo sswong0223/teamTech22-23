@@ -42,7 +42,6 @@ int main() {
     //Initialize variables for scheduler
     //vector will be a temporary data type to hold satellites, need to decide on a better container to store data
     //(maybe a priority queue/heap)
-    vector<Satellite> satellites;
     vector<Satellite> schedule;
 
     vector<priority_queue<Satellite>> heaps;
@@ -60,20 +59,30 @@ int main() {
         getline(input, line1);
         getline(input, line2);
 
-        //line1.pop_back(); // Gets rid of carriage return character
-        //line2.pop_back(); // Gets rid of carriage return character
+        line1.pop_back(); // Gets rid of carriage return character
+        line2.pop_back(); // Gets rid of carriage return character
         //create a TLE object with line 1 and line 2 as arguments
         libsgp4::Tle tle(line1, line2);
         //create a satellite object with the tle as an argument
         Satellite satellite(tle, currentTime);
 
+        if(!satellite.getConstrSuccess()){
+            continue;
+        }
+
         if(satellite.isLEO()){
             satellite.generatePasses();
-            string info = satellite.toString();
+            // Satellite does not pass over
+            if(satellite.getNumPasses() == 0){
+                continue;
+            }
+            satellite.toString();
+            satellite.assignRank();
+
             //satellites.push_back(satellite);
             //add satellite object to a max heap prioritized by ranking
             if(satellite.getRank() == 1)
-                heaps[0].push(satellite); //push error here because greater::operator won't work correctly
+                heaps[0].push(satellite);
             else if(satellite.getRank() == 2)
                 heaps[1].push(satellite);
             else if(satellite.getRank() == 3)
@@ -96,10 +105,8 @@ void createSchedule(vector<Satellite> schedule, vector<priority_queue<Satellite>
     /*schdeule.push_back(heaps[0][0]); // add first satellite to schedule
     heaps[0][0].pop(); // remove first satellite
     for(heap_num = 0; heap_num < 3; heapm++{ > 0){
-
     }
                 while(heap[heap_num].size())
-
     }*/
 }
 
