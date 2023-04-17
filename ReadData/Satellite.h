@@ -33,6 +33,11 @@ private:
     libsgp4::SGP4 sgp4;
     double maxElevation;
     int rank;
+    bool constructorSuccess;
+
+    std::string name;
+    std::string startString;
+    std::string endString;
 
 public:
     //constructor
@@ -42,11 +47,16 @@ public:
         //this->tle = tle1;
         //sgp4(tle);
         // OBS: 29, 82, 1
+        constructorSuccess = true;
         maxElevation = 0;
-        eci = sgp4.FindPosition(dt);
-        geo = eci.ToGeodetic();
-        assignRank();
-        // calculate passes
+        try{
+            eci = sgp4.FindPosition(dt);
+            geo = eci.ToGeodetic();
+        } catch(libsgp4::SatelliteException& e){
+            std::cout << "Could not calculate ECI" << std::endl;
+            constructorSuccess = false;
+        }
+
     }
 
     bool isLEO();
@@ -59,6 +69,12 @@ public:
 
     void assignRank();
 
+    void generatePasses();
+
+    int getNumPasses();
+
+    bool getConstrSuccess();
+
     libsgp4::DateTime getStartTime();
 
     libsgp4::DateTime getEndTime();
@@ -68,7 +84,7 @@ public:
     libsgp4::DateTime setEndTime(libsgp4::DateTime et);
 
 
-    string toString();
+    void toString();
 
     int getRank(){
         return rank;
@@ -80,13 +96,12 @@ public:
 
     //work on this after we know how endTime is formatted
     bool operator< (const Satellite& rSat) const{
-        if(getEarliestEndTime().Compare(rSat.getEarliestEndTime()) == -1) //endTime > rSat.getEndTime()
+        if(getEarliestEndTime().Compare(rSat.getEarliestEndTime()) == 1) //endTime > rSat.getEndTime()
             return true;
         else
             return false;
     }
 
-    void generatePasses();
 
 };
 
