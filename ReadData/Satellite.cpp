@@ -62,19 +62,19 @@ float Satellite::calculateDistance() {
 void Satellite::assignRank() {
     auto distance = calculateDistance();
     auto mean_motion = tle.MeanMotion();
-    auto elevation = this->geo.altitude;
+
     //auto angle_of_elevation = atan(elevation/distance); // arctan (elevation / distance)
 
     if (!isLEO()) {
         rank = 0; // satellite is tossed out when 0
-    } else if (mean_motion >= 17 && maxElevation >= 60) {
+    } else if (mean_motion >= 17 || maxElevation >= 1.047) {
         rank = 1;
-    } else if ((15 <= mean_motion && mean_motion <= 16) && (30 <= maxElevation)) {
+    } else if ((15 <= mean_motion && mean_motion <= 16) || (0.524 <= maxElevation)) {
         rank = 2;
-    } else if((10 <= maxElevation)) {
+    } else if((0.175 <= maxElevation)) {
         rank = 3;
     } else {
-        rank = 0;
+        rank = 3;
     }
 }
 
@@ -94,13 +94,10 @@ libsgp4::DateTime Satellite::setEndTime(libsgp4::DateTime et){
     endTime = et;
 }
 
-string Satellite::toString(){
-    string satInfo = tle.Name();
-    satInfo.append(" ");
-    satInfo.append(startTime.ToString());
-    satInfo.append(" ");
-    satInfo.append(endTime.ToString());
-    return satInfo;
+void Satellite::toString(){
+    name = tle.Name();
+    startString = startTime.ToString();
+    endString = endTime.ToString();
 }
 
 void Satellite::generatePasses(){
@@ -150,10 +147,19 @@ void Satellite::generatePasses(){
         passes.push_back(access);
         //std::cout << "Satellite visible from " << visibleStart << " to " << visibleEnd << "\n";
     }
+
     if(passes.size() > 0){
         startTime = passes.at(0).first;
         endTime = passes.at(0).second;
     }
 
+}
+
+int Satellite::getNumPasses() {
+    return passes.size();
+}
+
+bool Satellite::getConstrSuccess() {
+    return constructorSuccess;
 }
 
