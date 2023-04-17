@@ -9,8 +9,11 @@
 #include <string>
 #include <queue>
 #include <functional>
+#include <iterator>
 
 using namespace std;
+void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite>>& heaps);
+
 // returns vector of min heap priority queues and takes in 1 satellite object,
 // & vector of priority_queue that it needs to be added into
 // void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); implemented into main function
@@ -54,13 +57,15 @@ int main() {
 
     // Read in data from active.txt file until you reach the end of the file
     while(getline(input, buffer)){
-
+        if(heaps[0].size() > 50){
+            break;
+        }
         //read TLE lines
         getline(input, line1);
         getline(input, line2);
 
-        line1.pop_back(); // Gets rid of carriage return character
-        line2.pop_back(); // Gets rid of carriage return character
+        //line1.pop_back(); // Gets rid of carriage return character
+        //line2.pop_back(); // Gets rid of carriage return character
         //create a TLE object with line 1 and line 2 as arguments
         libsgp4::Tle tle(line1, line2);
         //create a satellite object with the tle as an argument
@@ -90,25 +95,50 @@ int main() {
 
         }
 
-
     }
+
+    createSchedule(schedule, heaps);
 
     return 0;
 }
 
-void createSchedule(vector<Satellite> schedule, vector<priority_queue<Satellite>> heaps) {
-    //use greedy algorithm and consider ranks of all satellites to schedule satellites
-    //take satellite with the largest ranking from the max heap
-    //consider all acceptable access periods of the satellite, find the one with the earliest end time, place it on the schedule
-    //Possible changes: have ranking “tiers” and find the satellite with the earliest end time in the highest tier, then add it to the schedule
+void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite>>& heaps){
 
-    /*schdeule.push_back(heaps[0][0]); // add first satellite to schedule
-    heaps[0][0].pop(); // remove first satellite
-    for(heap_num = 0; heap_num < 3; heapm++{ > 0){
+    schedule.push_back(heaps[0].top());
+    heaps[0].pop();
+
+    for(int heap_num = 0; heap_num < 3; heap_num++) {
+        while (heaps[heap_num].size() > 0) {
+            int index = 0;
+            Satellite sat = heaps[heap_num].top();
+            heaps[heap_num].pop();
+            while (index < schedule.size()) {
+                if (sat.getStartTime().Compare(schedule[index].getStartTime()) == -1) {
+                    break;
+                } else {
+                    index++;
+                }
+            }
+            auto it = schedule.begin() + index;
+            if (index == 0) {
+                if (sat.getEndTime().Compare(schedule[index].getStartTime()) == -1) {
+                    schedule.insert(it, sat);
+                }
+            } else if (index == schedule.size()) {
+                if(sat.getStartTime().Compare(schedule[index-1].getEndTime()) == 1){
+                    schedule.push_back(sat);
+                }
+
+            } else {
+                if(sat.getStartTime().Compare(schedule[index-1].getEndTime()) == 1 &&
+                    sat.getEndTime().Compare(schedule[index].getStartTime()) == -1){
+                      schedule.insert(it, sat);
+                }
+            }
+        }
     }
-                while(heap[heap_num].size())
-    }*/
 }
+
 
 //to create a metric of the schedule’s effectiveness, would be useful to have count of number of satellites in the schedule
 int numSatellites(vector<Satellite> satellites){
