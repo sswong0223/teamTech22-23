@@ -1,81 +1,60 @@
 import { config } from 'dotenv';
-config();
-
-import express, { Request, Response } from 'express';
+import * as dotenv from 'dotenv'
+import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-const SatelliteModel = require('./models/Satellite')
+import connectDB from './mongodb/connect.js';
+import SatelliteModel from './models/Satellite.js';
+import satelliteRouter from './routes/Satellite.routes.js'
 
-// const PORT = 5000;
-const app = express.Router();
+dotenv.config();
 
-// app.use(cors({
-//     origin: "*"
-//     })
-// );
-// app.use(express.json());
-const mongoUrl = process.env.MONGO_URL ?? 'mongodb://localhost/mydatabase';
+const app = express();
+app.use(cors());
+app.use(express.json());
 
-mongoose.connect(mongoUrl, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
+
+app.get('/', (req,res) => {
+    res.send({message: 'Hello World'});
 })
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch((error) => {
-  console.error('Failed to connect to MongoDB', error);
-});
 
-app.get('/satellite', async (req, res) => {
-    // const satellite = await Satellite.find();
-    // res.json(satellite);
+app.use('/api/satellite', satelliteRouter);
 
-    try {
-        // Fetch all satellites from the database using the Mongoose model
-        const satellites = await SatelliteModel.find();
-        res.json(satellites);
-      } catch (error) {
-        // Handle any errors
-        res.status(500).json({ error: 'Failed to fetch satellites' });
-      }
-});
+const startServer = async () => {
+    try{
+        connectDB(process.env.MONGO_URL);
+        app.listen(8080, () => console.log('Server started on port http://localhost:8080'));
+    } catch (error){
+        console.log(error);
+    }
+}
 
-app.post('/satellite', async (req, res) => {
-    // const newSatellite = new Satellite({
-    //     name: req.body.name,
-    //     startTime: req.body.startTime,
-    //     endTime: req.body.endTime
-    // });
-    // const createdSatellite = await newSatellite.save();
-    // res.json(createdSatellite);
+startServer();
 
-    try {
-        // Create a new satellite in the database using the Mongoose model
-        const satellite = new SatelliteModel({ 
-            name: req.body.name,
-            startTime: req.body.startTime,
-            endTime: req.body.endTime
-        })
-        await satellite.save();
-        res.json(satellite);
-      } catch (error) {
-        // Handle any errors
-        res.status(500).json({ error: 'Failed to create satellite' });
-      }
-});
-
-// app.delete('/satellite/:satelliteId', async (req, res) => {
-//     const satelliteId = req.params.satelliteId;
-//     const satellite = await Menu.findByIdAndDelete(satelliteId);
-//     res.json(satellite);
+// app.get('/satellite', async (req, res) => {
+//     try {
+//         // Fetch all satellites from the database using the Mongoose model
+//         const satellites = await SatelliteModel.find();
+//         res.json(satellites);
+//       } catch (error) {
+//         // Handle any errors
+//         res.status(500).json({ error: 'Failed to fetch satellites' });
+//       }
 // });
 
-// const mongoUrl = process.env.MONGO_URL ?? 'mongodb://localhost/mydatabase';
-
-// mongoose.connect(mongoUrl).then(() => {
-
-// console.log(`listening on port ${PORT}`);
-//  app.listen(PORT);   
+// app.post('/satellite', async (req, res) => {
+//     try {
+//         // Create a new satellite in the database using the Mongoose model
+//         const satellite = new SatelliteModel({ 
+//             name: req.body.name,
+//             startTime: req.body.startTime,
+//             endTime: req.body.endTime
+//         })
+//         await satellite.save();
+//         res.json(satellite);
+//       } catch (error) {
+//         // Handle any errors
+//         res.status(500).json({ error: 'Failed to create satellite' });
+//       }
 // });
