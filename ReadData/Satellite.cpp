@@ -94,6 +94,7 @@ libsgp4::DateTime Satellite::setEndTime(libsgp4::DateTime et){
     endTime = et;
 }
 
+
 void Satellite::toString(){
     name = tle.Name();
     startString = startTime.ToString();
@@ -168,6 +169,18 @@ int Satellite::getNumPasses() {
 
 bool Satellite::getConstrSuccess() {
     return constructorSuccess;
+}
+
+string Satellite::getName(){
+    return name;
+}
+
+string Satellite::getStartString(){
+    return startString;
+}
+
+string Satellite::getEndString(){
+    return endString;
 }
 
 bool Satellite::operator< (const Satellite& rSat) const{
