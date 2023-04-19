@@ -69,6 +69,12 @@ public:
 
     bool getConstrSuccess();
 
+    string getName();
+
+    string getStartString();
+
+    string getEndString();
+
     libsgp4::DateTime getStartTime();
 
     libsgp4::DateTime getEndTime();
