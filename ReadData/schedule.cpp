@@ -1,15 +1,28 @@
 #include <iostream>
 #include <vector>
+#include <cstdint>
 #include <fstream>
+
 #include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
 #include "libsgp4/DateTime.h"
+
 #include <vector>
 #include <string>
 #include <queue>
 #include <functional>
 #include <iterator>
+
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/document.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/json.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/client.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/stdx.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/uri.hpp>
+
+using bsoncxx::builder::basic::kvp;
+using bsoncxx::builder::basic::make_document;
 
 using namespace std;
 void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite>>& heaps);
@@ -98,6 +111,40 @@ int main() {
     }
 
     createSchedule(schedule, heaps);
+
+    try{
+        // Create an instance.
+        mongocxx::instance inst{};
+
+        // Replace the connection string with your MongoDB deployment's connection string.
+        const auto uri = mongocxx::uri{"mongodb+srv://TeamTech22-23:\"TeamTech22-23\"@satellitecluster.uajispm.mongodb.net/?retryWrites=true&w=majority"};
+
+        // Set the version of the Stable API on the client.
+        mongocxx::options::client client_options;
+        const auto api = mongocxx::options::server_api{ mongocxx::options::server_api::version::k_version_1 };
+        client_options.server_api_opts(api);
+
+        // Setup the connection and get a handle on the "TeamTech" database.
+        mongocxx::client conn{ uri, client_options };
+        mongocxx::database db = conn["TeamTech"];
+
+        // Ping the database.
+        const auto ping_cmd = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
+        db.run_command(ping_cmd.view());
+        std::cout << "Pinged your deployment. You successfully connected to MongoDB!" << std::endl;
+    } catch (const std::exception& e){
+        // Handle errors.
+        std::cout<< "Exception: " << e.what() << std::endl;
+    }
+
+    //once connected to MongoDB, send the output for all satellites in the schedule to the database
+    for(int i = 0; i < schedule.size(); i++){
+        auto sat_doc = make_document(
+                kvp("name", schedule[i].getName()),
+                kvp("startTime", schedule[i].getStartString()),
+                kvp("endTime", schedule[i].getEndString()));
+        auto insert_one_result = collection.insert_one(sat_doc);
+    }
 
     return 0;
 }
