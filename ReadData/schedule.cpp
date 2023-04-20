@@ -16,10 +16,14 @@
 
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/document.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/json.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/kvp.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/build/src/mongocxx/config/config.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/client.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/stdx.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/uri.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/uri.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/options/client.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
@@ -27,10 +31,6 @@ using bsoncxx::builder::basic::make_document;
 using namespace std;
 void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite>>& heaps);
 
-// returns vector of min heap priority queues and takes in 1 satellite object,
-// & vector of priority_queue that it needs to be added into
-// void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); implemented into main function
-//operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
 
     /*
@@ -112,6 +112,8 @@ int main() {
 
     createSchedule(schedule, heaps);
 
+
+
     try{
         // Create an instance.
         mongocxx::instance inst{};
@@ -131,10 +133,10 @@ int main() {
         // Ping the database.
         const auto ping_cmd = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
         db.run_command(ping_cmd.view());
-        std::cout << "Pinged your deployment. You successfully connected to MongoDB!" << std::endl;
+        cout << "Pinged your deployment. You successfully connected to MongoDB!" << endl;
     } catch (const std::exception& e){
         // Handle errors.
-        std::cout<< "Exception: " << e.what() << std::endl;
+        cout<< "Exception: " << e.what() << endl;
     }
 
     //once connected to MongoDB, send the output for all satellites in the schedule to the database
@@ -143,7 +145,7 @@ int main() {
                 kvp("name", schedule[i].getName()),
                 kvp("startTime", schedule[i].getStartString()),
                 kvp("endTime", schedule[i].getEndString()));
-        auto insert_one_result = collection.insert_one(sat_doc);
+        auto insert_one_result = db.insert_one(sat_doc);
     }
 
     return 0;
@@ -197,24 +199,4 @@ string printSchedule(vector<Satellite> schedule){
         //the satellites toString() will print the specifics for each satellite
         schedule[i].toString();
     }
-
-    /*
-     * Output:
-     * - How are we planning on storing the output of our algorithm?
-     * - Needs to be in a format that the front-end team can easily work with
-     */
 }
-
-/*
-void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<Satellite>, satComparator>>& heap, Satellite& sat){
-    //add more if statements if more ranks
-    if(sat.getRank() == 1){
-        heap[0].push(sat); //push error here because greater::operator won't work correctly?
-    }
-    else if(sat.getRank() == 2){
-        heap[1].push(sat);
-    }
-    else if(sat.getRank() == 3){
-        heap[2].push(sat);
-    }
-}*/
