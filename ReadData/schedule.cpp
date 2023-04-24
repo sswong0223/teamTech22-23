@@ -19,11 +19,15 @@
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/kvp.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/build/src/mongocxx/config/config.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/client.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/client.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/stdx.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/uri.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/uri.cpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/uri.hpp>
 #include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/options/client.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
+#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.cpp>
+
 
 using bsoncxx::builder::basic::kvp;
 using bsoncxx::builder::basic::make_document;
@@ -115,20 +119,23 @@ int main() {
 
 
     try{
+
         // Create an instance.
         mongocxx::instance inst{};
 
-        // Replace the connection string with your MongoDB deployment's connection string.
-        const auto uri = mongocxx::uri{"mongodb+srv://TeamTech22-23:\"TeamTech22-23\"@satellitecluster.uajispm.mongodb.net/?retryWrites=true&w=majority"};
+        //connect with TeamTech database
+        //
+        mongocxx::client client{mongocxx::uri{"mongodb+srv://TeamTech22-23:TeamTech22-23@satellitecluster.uajispm.mongodb.net/?retryWrites=true&w=majority"}};
+        auto db = client["TeamTech"];
 
-        // Set the version of the Stable API on the client.
-        mongocxx::options::client client_options;
-        const auto api = mongocxx::options::server_api{ mongocxx::options::server_api::version::k_version_1 };
-        client_options.server_api_opts(api);
-
-        // Setup the connection and get a handle on the "TeamTech" database.
-        mongocxx::client conn{ uri, client_options };
-        mongocxx::database db = conn["TeamTech"];
+        //once connected to MongoDB, send the output for all satellites in the schedule to the database
+        for(int i = 0; i < schedule.size(); i++){
+            auto sat_doc = make_document(
+                    kvp("name", schedule[i].getName()),
+                    kvp("startTime", schedule[i].getStartString()),
+                    kvp("endTime", schedule[i].getEndString()));
+            auto insert_one_result = db.insert_one(sat_doc);
+        }
 
         // Ping the database.
         const auto ping_cmd = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
@@ -139,14 +146,7 @@ int main() {
         cout<< "Exception: " << e.what() << endl;
     }
 
-    //once connected to MongoDB, send the output for all satellites in the schedule to the database
-    for(int i = 0; i < schedule.size(); i++){
-        auto sat_doc = make_document(
-                kvp("name", schedule[i].getName()),
-                kvp("startTime", schedule[i].getStartString()),
-                kvp("endTime", schedule[i].getEndString()));
-        auto insert_one_result = db.insert_one(sat_doc);
-    }
+
 
     return 0;
 }
