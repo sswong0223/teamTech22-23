@@ -1,40 +1,23 @@
 #include <iostream>
 #include <vector>
-#include <cstdint>
 #include <fstream>
-
 #include "libsgp4/SGP4.h"
 #include "Satellite.h"
 #include "libsgp4/Tle.h"
 #include "libsgp4/DateTime.h"
-
 #include <vector>
 #include <string>
 #include <queue>
 #include <functional>
-#include <iterator>
-
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/document.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/json.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/bsoncxx/builder/basic/kvp.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/build/src/mongocxx/config/config.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/client.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/client.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/stdx.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/uri.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/uri.cpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/private/uri.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/options/client.hpp>
-#include </Users/cc/Downloads/TeamTech2022-2023/TestSGP4/mongo-c-driver-1.4.2/mongo-cxx-driver-r3.0.2/src/mongocxx/instance.cpp>
 
 
-using bsoncxx::builder::basic::kvp;
-using bsoncxx::builder::basic::make_document;
 
-using namespace std;
 void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite>>& heaps);
 
+// returns vector of min heap priority queues and takes in 1 satellite object,
+// & vector of priority_queue that it needs to be added into
+// void addSatelliteToHeaps(vector<priority_queue<Satellite, vector<int>, satComparator>>& heap, Satellite& sat); implemented into main function
+//operator overload to be able to compare times in satellite class, change data type of the things in priority_queue later
 int main() {
 
     /*
@@ -46,7 +29,13 @@ int main() {
     libsgp4::Tle obj1(line1, line2);
     Satellite satellite(obj1, time);
     satellite.generatePasses();
+    satellite.toString();
+    satellite.assignRank();
+    vector<Satellite> schedule;
+    schedule.push_back(satellite);
+    schedule.push_back(satellite);
     */
+
 
     // DEFAULT DATE TIME
     //needs to be military udt time
@@ -114,38 +103,25 @@ int main() {
 
     }
 
+
     createSchedule(schedule, heaps);
 
 
+    std::ofstream file("satelliteSchedule.json");
 
-    try{
+    file << "{" << endl;
+    file << "\t\"satellites\": [" << endl;
 
-        // Create an instance.
-        mongocxx::instance inst{};
-
-        //connect with TeamTech database
-        //
-        mongocxx::client client{mongocxx::uri{"mongodb+srv://TeamTech22-23:TeamTech22-23@satellitecluster.uajispm.mongodb.net/?retryWrites=true&w=majority"}};
-        auto db = client["TeamTech"];
-
-        //once connected to MongoDB, send the output for all satellites in the schedule to the database
-        for(int i = 0; i < schedule.size(); i++){
-            auto sat_doc = make_document(
-                    kvp("name", schedule[i].getName()),
-                    kvp("startTime", schedule[i].getStartString()),
-                    kvp("endTime", schedule[i].getEndString()));
-            auto insert_one_result = db.insert_one(sat_doc);
-        }
-
-        // Ping the database.
-        const auto ping_cmd = bsoncxx::builder::basic::make_document(bsoncxx::builder::basic::kvp("ping", 1));
-        db.run_command(ping_cmd.view());
-        cout << "Pinged your deployment. You successfully connected to MongoDB!" << endl;
-    } catch (const std::exception& e){
-        // Handle errors.
-        cout<< "Exception: " << e.what() << endl;
+    for(int i = 0; i < schedule.size() - 1; i++){
+        file << "\t\t{ \"name\":\"" << schedule.at(i).getName() << "\" , ";
+        file << "\"startTime\":\"" << schedule.at(i).getStartString() << "\" , ";
+        file << "\"endTime\":\"" << schedule.at(i).getEndString() << "\" }," << endl;
     }
-
+    file << "\t\t{ \"name\":\"" << schedule.at(schedule.size()-1).getName() << "\" , ";
+    file << "\"startTime\":\"" << schedule.at(schedule.size()-1).getStartString() << "\" , ";
+    file << "\"endTime\":\"" << schedule.at(schedule.size()-1).getEndString() << "\" }" << endl;
+    file << "\t]" << endl;
+    file << "}";
 
 
     return 0;
@@ -180,8 +156,8 @@ void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite
 
             } else {
                 if(sat.getStartTime().Compare(schedule[index-1].getEndTime()) == 1 &&
-                    sat.getEndTime().Compare(schedule[index].getStartTime()) == -1){
-                      schedule.insert(it, sat);
+                   sat.getEndTime().Compare(schedule[index].getStartTime()) == -1){
+                    schedule.insert(it, sat);
                 }
             }
         }
@@ -199,4 +175,12 @@ string printSchedule(vector<Satellite> schedule){
         //the satellites toString() will print the specifics for each satellite
         schedule[i].toString();
     }
+
+    /*
+     * Output:
+     * - How are we planning on storing the output of our algorithm?
+     * - Needs to be in a format that the front-end team can easily work with
+     */
 }
+
+
