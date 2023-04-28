@@ -40,8 +40,6 @@ export default function App() {
         <img src={logo} width={'100'}/>
 </div>
     </div>
-
-
   
   );
 }

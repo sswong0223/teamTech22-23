@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   format,
   subMonths,
@@ -14,6 +14,18 @@ import {
 } from "date-fns";
 
 const Calendar = ({ showDetailsHandle }) => {
+
+  const [satelliteItems, setSatellite] = useState([]);
+
+  useEffect(() => {
+    async function getItems() {
+      const response = await fetch("http://localhost:5000/menu");
+      const newSatellite = await response.json();
+      setSatellite(newSatellite);
+    }
+    getItems();
+  }, []);
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(getWeek(currentMonth));
   const [selectedDate, setSelectedDate] = useState(new Date());
