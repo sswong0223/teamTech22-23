@@ -15,16 +15,16 @@ import {
 
 const Calendar = ({ showDetailsHandle }) => {
 
-  const [satelliteItems, setSatellite] = useState([]);
+  // const [satelliteItems, setSatellite] = useState([]);
 
-  useEffect(() => {
-    async function getItems() {
-      const response = await fetch("http://localhost:8080/api/satellite");
-      const newSatellite = await response.json();
-      setSatellite(newSatellite);
-    }
-    getItems();
-  }, []);
+  // useEffect(() => {
+  //   async function getItems() {
+  //     const response = await fetch("http://localhost:8080/api/satellite");
+  //     const newSatellite = await response.json();
+  //     setSatellite(newSatellite);
+  //   }
+  //   getItems();
+  // }, []);
 
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -158,7 +158,7 @@ const Calendar = ({ showDetailsHandle }) => {
       {renderCells()}
       {renderFooter()}
 
-      <div>
+      {/* <div>
       <h1>Satellite Data</h1>
       <ul>
         {satelliteItems.map((item) => (
@@ -167,7 +167,7 @@ const Calendar = ({ showDetailsHandle }) => {
           </li>
         ))}
       </ul>
-  </div>
+  </div> */}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Calendar from "./Calendar";
 import Details from "./Details";
 import logo from "./images/sweCaciLogo.png";
+import ShowEvents from "./Event";
 
 
 export default function App() {
@@ -25,6 +26,8 @@ export default function App() {
       {showDetails && <Details data={data} />}
       <div className= "Events">
      <h3> Satellite information Down Here</h3>
+
+     {ShowEvents()}
       
   
       <ul style={{textAlign: "left"}}>Name:</ul>
