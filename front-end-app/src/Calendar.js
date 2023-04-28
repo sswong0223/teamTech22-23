@@ -44,6 +44,8 @@ const Calendar = ({ showDetailsHandle }) => {
   const onDateClickHandle = (day, dayStr) => {
     setSelectedDate(day);
     showDetailsHandle(dayStr);
+   
+    
   };
 
   const renderHeader = () => {
