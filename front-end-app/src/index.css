@@ -246,3 +246,21 @@ main {
   flex-basis: calc(100% / 7);
   width: calc(100% / 7);
 }
+
+Footer {
+  height: 35px;
+  background-color: #F5F5F5;
+  padding-top: 5px;
+  width: 100%;
+  margin: 0;
+}
+.Events {
+  height: auto;
+  width:auto;
+  background-color: #F5F5F5;
+  padding-top: 5px;
+  margin-bottom: 10px;
+  color:#6a1fa4;
+  font-size: 130%;
+  font-weight: bold;
+}
