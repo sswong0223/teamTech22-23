@@ -1,9 +1,10 @@
 import "./index.css";
+import "./Events.js"
 import { useState } from "react";
 import Calendar from "./Calendar";
 import Details from "./Details";
 import logo from "./images/sweCaciLogo.png";
-import showEvents from "./Event";
+
 
 export default function App() {
   const [showDetails, setShowDetails] = useState(false);
@@ -15,17 +16,32 @@ export default function App() {
 
   return (
     <div className="App">
-      <h1>CACI Satellite Schedule</h1>
-      <br />
+     
+      <h1>CACI Satellite Scheduler</h1>
+       
       <Calendar showDetailsHandle={showDetailsHandle} />
       <br />
       <div className="Events">
-        {showDetails && <Details data={data} />}
-        {showEvents()}
+      {showDetails && <Details data={data} />}
+      <div className= "Events">
+     <h3> Satellite information Down Here</h3>
+      
+  
+      <ul style={{textAlign: "left"}}>Name:</ul>
+      <ul style={{textAlign: "left"}}>Start Time:</ul>
+      <ul style={{textAlign: "left"}}>End Time:</ul>
+      <br>
+      </br>
+      
+  </div>
       </div>
-      <div className="Footer">
+
+    <div className="Footer">
         <img src={logo} width={'100'}/>
-      </div>
+</div>
     </div>
+
+
+  
   );
 }
