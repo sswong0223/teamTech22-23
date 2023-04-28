@@ -26,6 +26,7 @@ const Calendar = ({ showDetailsHandle }) => {
     getItems();
   }, []);
 
+
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(getWeek(currentMonth));
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -156,6 +157,17 @@ const Calendar = ({ showDetailsHandle }) => {
       {renderDays()}
       {renderCells()}
       {renderFooter()}
+
+      <div>
+      <h1>Satellite Data</h1>
+      <ul>
+        {satelliteItems.map((item) => (
+          <li key={item.id}>
+            Name: {item.name}, Start Time: {item.startTime}, End Time: {item.endTime}
+          </li>
+        ))}
+      </ul>
+  </div>
     </div>
   );
 };
