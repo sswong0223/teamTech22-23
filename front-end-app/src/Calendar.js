@@ -19,7 +19,7 @@ const Calendar = ({ showDetailsHandle }) => {
 
   useEffect(() => {
     async function getItems() {
-      const response = await fetch("http://localhost:5000/menu");
+      const response = await fetch("http://localhost:8080/satellite");
       const newSatellite = await response.json();
       setSatellite(newSatellite);
     }
