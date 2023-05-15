@@ -12,24 +12,30 @@ import {
   subWeeks, 
   getDay
 } from "date-fns";
+import "./Event.js";
+import ShowEvents from "./Event.js";
 
 const Calendar = ({ showDetailsHandle }) => {
 
-  // const [satelliteItems, setSatellite] = useState([]);
+  const [satelliteItems, setSatellite] = useState([]);
 
-  // useEffect(() => {
-  //   async function getItems() {
-  //     const response = await fetch("http://localhost:8080/api/satellite");
-  //     const newSatellite = await response.json();
-  //     setSatellite(newSatellite);
-  //   }
-  //   getItems();
-  // }, []);
+  useEffect(() => {
+    async function getItems() {
+      const response = await fetch("http://localhost:8080/api/satellite");
+      const newSatellite = await response.json();
+      setSatellite(newSatellite);
+      console.log("sat items", newSatellite);
+    }
+    getItems();
+  }, []);
+
 
 
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [currentWeek, setCurrentWeek] = useState(getWeek(currentMonth));
   const [selectedDate, setSelectedDate] = useState(new Date());
+
+
 
   const changeMonthHandle = (btnType) => {
     if (btnType === "<<") {
@@ -57,7 +63,7 @@ const Calendar = ({ showDetailsHandle }) => {
   const onDateClickHandle = (day, dayStr) => {
     setSelectedDate(day);
     showDetailsHandle(dayStr);
-   
+    
     
   };
 
@@ -118,6 +124,9 @@ const Calendar = ({ showDetailsHandle }) => {
             onClick={() => {
               const dayStr = format(cloneDay, "ccc dd MMM yy");
               onDateClickHandle(cloneDay, dayStr);
+              //show event function here
+              // ShowEvents();
+
             }}
           >
             <span className="number">{formattedDate}</span>
@@ -152,23 +161,20 @@ const Calendar = ({ showDetailsHandle }) => {
     );
   };
   return (
-    <div className="calendar">
-      {renderHeader()}
-      {renderDays()}
-      {renderCells()}
-      {renderFooter()}
-
-      {/* <div>
-      <h1>Satellite Data</h1>
-      <ul>
-        {satelliteItems.map((item) => (
-          <li key={item.id}>
-            Name: {item.name}, Start Time: {item.startTime}, End Time: {item.endTime}
-          </li>
-        ))}
-      </ul>
-  </div> */}
+    <div>
+      <div className="calendar">
+        {renderHeader()}
+        {renderDays()}
+        {renderCells()}
+        {renderFooter()}
+        {/* {ShowEvents()} */}
+      </div>
+      <div className="Events">
+        
+        {ShowEvents( format(selectedDate, "yyyy-MM-dd"))} 
+      </div>
     </div>
+    
   );
 };
 

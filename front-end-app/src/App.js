@@ -15,6 +15,7 @@ export default function App() {
     setShowDetails(true);
   };
 
+
   return (
     <div className="App">
      
@@ -22,23 +23,7 @@ export default function App() {
        
       <Calendar showDetailsHandle={showDetailsHandle} />
       <br />
-      <div className="Events">
-      {showDetails && <Details data={data} />}
-      <div className= "Events">
-     <h3> Satellite information Down Here</h3>
-
-     {ShowEvents()}
       
-  
-      <ul style={{textAlign: "left"}}>Name:</ul>
-      <ul style={{textAlign: "left"}}>Start Time:</ul>
-      <ul style={{textAlign: "left"}}>End Time:</ul>
-      <br>
-      </br>
-      
-  </div>
-      </div>
-
     <div className="Footer">
         <img src={logo} width={'100'}/>
 </div>
