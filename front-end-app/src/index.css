@@ -296,8 +296,24 @@ Footer {
   width:auto;
   background-color: #F5F5F5;
   padding-top: 5px;
-  margin-bottom: 10px;
+  margin: auto;
   color:#6a1fa4;
   font-size: 130%;
   font-weight: bold;
+
 }
+
+/* table {
+  border: 5px solid purple;
+  background-color: #FFFF;
+  width: auto;
+  height: auto;
+  margin: auto;
+
+} */
+/* 
+th {
+  border-bottom: 2px solid purple;
+  align-items: center;
+} */
+
