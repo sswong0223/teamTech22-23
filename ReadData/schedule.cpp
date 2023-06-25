@@ -38,7 +38,7 @@ int main() {
 
 
     // DEFAULT DATE TIME
-    //needs to be military udt time
+    // needs to be military udt time
     libsgp4::DateTime currentTime(libsgp4::DateTime::Now());
 
     // Initialize variables for reading input file
@@ -63,15 +63,13 @@ int main() {
 
     // Read in data from active.txt file until you reach the end of the file
     while(getline(input, buffer)){
-        if(heaps[0].size() > 50){
-            break;
-        }
+
         //read TLE lines
         getline(input, line1);
         getline(input, line2);
 
-        //line1.pop_back(); // Gets rid of carriage return character
-        //line2.pop_back(); // Gets rid of carriage return character
+        line1.pop_back(); // Gets rid of carriage return character
+        line2.pop_back(); // Gets rid of carriage return character
         //create a TLE object with line 1 and line 2 as arguments
         libsgp4::Tle tle(line1, line2);
         //create a satellite object with the tle as an argument
@@ -107,21 +105,19 @@ int main() {
     createSchedule(schedule, heaps);
 
 
+    // Create json file
     std::ofstream file("satelliteSchedule.json");
 
-    file << "{" << endl;
-    file << "\t\"satellites\": [" << endl;
 
     for(int i = 0; i < schedule.size() - 1; i++){
-        file << "\t\t{ \"name\":\"" << schedule.at(i).getName() << "\" , ";
+        file << "{ \"name\":\"" << schedule.at(i).getName() << "\" , ";
         file << "\"startTime\":\"" << schedule.at(i).getStartString() << "\" , ";
-        file << "\"endTime\":\"" << schedule.at(i).getEndString() << "\" }," << endl;
+        file << "\"endTime\":\"" << schedule.at(i).getEndString() << "\" }" << endl;
     }
-    file << "\t\t{ \"name\":\"" << schedule.at(schedule.size()-1).getName() << "\" , ";
+    file << "{ \"name\":\"" << schedule.at(schedule.size()-1).getName() << "\" , ";
     file << "\"startTime\":\"" << schedule.at(schedule.size()-1).getStartString() << "\" , ";
     file << "\"endTime\":\"" << schedule.at(schedule.size()-1).getEndString() << "\" }" << endl;
-    file << "\t]" << endl;
-    file << "}";
+
 
 
     return 0;
@@ -137,29 +133,45 @@ void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite
             int index = 0;
             Satellite sat = heaps[heap_num].top();
             heaps[heap_num].pop();
+
+            // Make new satellite with next pass
+            Satellite update(sat);
+            if(update.setStartAndEndTime()){
+                heaps[heap_num].push(update);
+            }
+
+            // Find position in schedule
             while (index < schedule.size()) {
-                if (sat.getStartTime().Compare(schedule[index].getStartTime()) == -1) {
+                if (sat.getStartTime() <= schedule[index].getStartTime() ) {
                     break;
+
                 } else {
                     index++;
                 }
+
+            }
+
+            // Check for conflicts
+            if(sat.getStartTime() == schedule[index].getStartTime() ){
+                continue;
             }
             auto it = schedule.begin() + index;
             if (index == 0) {
-                if (sat.getEndTime().Compare(schedule[index].getStartTime()) == -1) {
+                if (sat.getEndTime() < schedule[index].getStartTime()) {
                     schedule.insert(it, sat);
                 }
             } else if (index == schedule.size()) {
-                if(sat.getStartTime().Compare(schedule[index-1].getEndTime()) == 1){
+                if(sat.getStartTime() > schedule[index-1].getEndTime() ){
                     schedule.push_back(sat);
                 }
 
             } else {
-                if(sat.getStartTime().Compare(schedule[index-1].getEndTime()) == 1 &&
-                   sat.getEndTime().Compare(schedule[index].getStartTime()) == -1){
+                if(sat.getStartTime() > schedule[index-1].getEndTime()  &&
+                   sat.getEndTime() < schedule[index].getStartTime() ){
                     schedule.insert(it, sat);
                 }
             }
+
         }
     }
 }
@@ -169,18 +181,3 @@ void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite
 int numSatellites(vector<Satellite> satellites){
     return satellites.size();
 }
-
-string printSchedule(vector<Satellite> schedule){
-    for (int i = 0; i < schedule.size(); i++) {
-        //the satellites toString() will print the specifics for each satellite
-        schedule[i].toString();
-    }
-
-    /*
-     * Output:
-     * - How are we planning on storing the output of our algorithm?
-     * - Needs to be in a format that the front-end team can easily work with
-     */
-}
-
-
