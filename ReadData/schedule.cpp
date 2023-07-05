@@ -181,3 +181,6 @@ void createSchedule(vector<Satellite>& schedule, vector<priority_queue<Satellite
 int numSatellites(vector<Satellite> satellites){
     return satellites.size();
 }
+
+
+
